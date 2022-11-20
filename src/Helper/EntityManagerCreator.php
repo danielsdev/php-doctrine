@@ -2,8 +2,11 @@
 
 namespace App\Helper;
 
+use Doctrine\DBAL\Logging\Middleware;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
+use Symfony\Component\Console\Logger\ConsoleLogger;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class EntityManagerCreator
 {
@@ -14,15 +17,11 @@ class EntityManagerCreator
             [__DIR__."/.."],
             isDevMode: true
         );
-        // or if you prefer annotation or XML
-        // $config = ORMSetup::createAnnotationMetadataConfiguration(
-        //    paths: array(__DIR__."/src"),
-        //    isDevMode: true,
-        // );
-        // $config = ORMSetup::createXMLMetadataConfiguration(
-        //    paths: array(__DIR__."/config/xml"),
-        //    isDevMode: true,
-        //);
+        $consoleOutput = new ConsoleOutput(ConsoleOutput::VERBOSITY_DEBUG);
+        $consoleLogger = new ConsoleLogger($consoleOutput);
+        $config->setMiddlewares([
+            new Middleware($consoleLogger)
+        ]);
 
         // database configuration parameters
         $conn = [
@@ -30,7 +29,6 @@ class EntityManagerCreator
             'path' => __DIR__ . '/../../database/db.sqlite',
         ];
 
-        // obtaining the entity manager
         return EntityManager::create($conn, $config);
     }
 }

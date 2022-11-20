@@ -11,7 +11,7 @@ $entityManager = EntityManagerCreator::createEntityManager();
 $studentRepository = $entityManager->getRepository(Student::class);
 
 /** @var Student[] $studentList */
-$studentList = $studentRepository->findAll();
+$studentList = $studentRepository->studentsAndCourses();
 
 foreach ($studentList as $student) {
     echo "ID: {$student->getId()}\nNome: {$student->getName()}";
@@ -37,4 +37,6 @@ foreach ($studentList as $student) {
     echo PHP_EOL.PHP_EOL;
 }
 
-echo $studentRepository->count([]).PHP_EOL;
+$dql = 'SELECT COUNT(student) FROM App\Entity\Student student';
+$studentCount = $entityManager->createQuery($dql)->getSingleScalarResult();
+echo $studentCount.PHP_EOL;
